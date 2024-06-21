@@ -25,7 +25,7 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const channelId = urlParams.get("id");
-    const streamUrl = "https://mavenarts.in/cinemadtv/mainfest.php?id=" + channelId;
+    const streamUrl = "https://mavenarts.in/cinemadtv/manifest.php?id=" + channelId;
     const licenseUrl = "https://mavenarts.in/cinemadtv/lic.php?id=" + channelId;
 
     fetchLicenseData(licenseUrl)
