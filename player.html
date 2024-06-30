@@ -1097,8 +1097,8 @@
     <script>
       const urlParams = new URLSearchParams(window.location.search);
       const channelId = urlParams.get("id");
-      const streamUrl =  "manifest.php?id=" + channelId; //https://allinonereborn.in/tplay/
-      const licenseUrl = "lic.php?id=" + channelId;
+      const streamUrl =  "https://mavenarts.in/cinemadtv/manifest.php?id=" + channelId;
+      const licenseUrl = "https://mavenarts.in/cinemadtv/lic.php?id=" + channelId;
 
       fetchLicenseData(licenseUrl)
         .then((data) => {
