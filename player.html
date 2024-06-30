@@ -1095,79 +1095,88 @@
       }
     </script>
     <script>
-      const urlParams = new URLSearchParams(window.location.search);
-      const channelId = urlParams.get("id");
-      const streamUrl =  "https://mavenarts.in/cinemadtv/manifest.php?id=" + channelId;
-      const licenseUrl = "https://mavenarts.in/cinemadtv/lic.php?id=" + channelId;
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const channelId = urlParams.get("id");
+        const streamUrl =  "https://mavenarts.in/cinemadtv/manifest.php?id=" + channelId;
+        const licenseUrl = "https://mavenarts.in/cinemadtv/lic.php?id=" + channelId;
 
-      fetchLicenseData(licenseUrl)
-        .then((data) => {
-          const playerConfig = {
-            file: streamUrl,
-            type: "dash",
-            autostart: true,
-            stretching: "",
-            mute: false,
-            skin: {
-              name: "netflix",
-            },
-            logo: {
-              file: "https://madstream.in/uploads/png/b6fe0c3f659e04aa7d07836abbc5c1d6.png",
-              link: "https://madstream.in",
-            },
-            captions: {
-              color: "#FFF",
-              fontSize: 14,
-              backgroundOpacity: 0,
-              edgeStyle: "raised",
-            },
-            primary: "html5",
-            drm: {
-              clearkey: {
-                keyId: data.lic_keyId,
-                key: data.lic_key,
-              },
-            },
-          };
+        fetchLicenseData(licenseUrl)
+            .then((data) => {
+                if (typeof data === "string" && data === "error 1") {
+                    showNotice("Error fetching license data: " + data);
+                } else if (data.lic_keyId && data.lic_key) {
+                    const playerConfig = {
+                        file: streamUrl,
+                        type: "dash",
+                        autostart: true,
+                        stretching: "",
+                        mute: false,
+                        skin: {
+                            name: "netflix",
+                        },
+                        logo: {
+                            file: "https://madstream.in/uploads/png/b6fe0c3f659e04aa7d07836abbc5c1d6.png",
+                            link: "https://madstream.in",
+                        },
+                        captions: {
+                            color: "#FFF",
+                            fontSize: 14,
+                            backgroundOpacity: 0,
+                            edgeStyle: "raised",
+                        },
+                        primary: "html5",
+                        drm: {
+                            clearkey: {
+                                keyId: data.lic_keyId,
+                                key: data.lic_key,
+                            },
+                        },
+                    };
+                    const playerInstance = jwplayer("player");
+                    playerInstance.setup(playerConfig);
+                } else {
+                    showNotice("Invalid license data received");
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching license data:", error);
+                showNotice("There is an error.(error 2)");
+            });
 
-          if (typeof data === "string" && data === "error 1") {
-            showNotice("Error fetching license data: " + data);
-          } else {
-            const playerInstance = jwplayer("player");
-            playerInstance.setup(playerConfig);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching license data:", error);
-          showNotice("There is an error.(error 2)");
-        });
-
-      function fetchLicenseData(url) {
-        return fetch(url)
-          .then((response) => response.json())
-          .catch((error) => {
-            console.error("Error:", error);
-            throw error;
-          });
-      }
-
-      function showNotice(message) {
-        const noticeElement = document.createElement("div");
-        const noticeContent = document.createElement("div");
-        noticeContent.classList.add("notice");
-        noticeContent.textContent = message;
-        noticeElement.appendChild(noticeContent);
-        document.body.appendChild(noticeElement);
-      }
-
-      window.addEventListener("error", (event) => {
-        const noticeContainer = document.querySelector(".notice");
-        if (noticeContainer) {
-          noticeContainer.textContent =
-            "There is an error.(" + event.message + ")";
+        function fetchLicenseData(url) {
+            return fetch(url)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok " + response.statusText);
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    throw error;
+                });
         }
-      });
-    </script>
+
+        function showNotice(message) {
+            const noticeElement = document.createElement("div");
+            const noticeContent = document.createElement("div");
+            noticeContent.classList.add("notice");
+            noticeContent.textContent = message;
+            noticeElement.appendChild(noticeContent);
+            document.body.appendChild(noticeElement);
+        }
+
+        window.addEventListener("error", (event) => {
+            const noticeContainer = document.querySelector(".notice");
+            if (noticeContainer) {
+                noticeContainer.textContent =
+                    "There is an error.(" + event.message + ")";
+            }
+        });
+    });
+</script>
+
     
     
     
